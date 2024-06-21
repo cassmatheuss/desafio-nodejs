@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  db:
+    container_name: "db-desafio-nodejs-khipo"
+    image: postgres
+    ports: 
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: desafio-nodejs
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: postgres 

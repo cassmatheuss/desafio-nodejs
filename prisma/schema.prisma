@@ -6,3 +6,80 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                 String        @id @default(uuid())
+  name               String
+  email              String        @unique
+  password           String
+  projects_ownership Project[]
+  projects           UserProject[]
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  members     UserProject[]
+  ownerId     String        @map("owner_id")
+  owner       User          @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  tasks       Task[]
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  @@map("projects")
+}
+
+model UserProject {
+  userId    String  @map("user_id")
+  user      User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@id([userId, projectId])
+  @@map("user_projects")
+}
+
+model Task {
+  id          String      @id @default(uuid())
+  title       String      @db.VarChar(255)
+  description String?
+  status      Status
+  projectId   String      @map("project_id")
+  project     Project     @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  tags        TagInTask[]
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  @@map("tasks")
+}
+
+model Tag {
+  id    String      @id @default(uuid())
+  title String
+  tasks TagInTask[]
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  @@map("tags")
+}
+
+model TagInTask {
+  tagId  String @map("tag_id")
+  tag    Tag    @relation(fields: [tagId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  taskId String @map("task_id")
+  task   Task   @relation(fields: [taskId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+  @@id([tagId, taskId])
+  @@map("tags_in_task")
+}
+
+enum Status {
+  EM_ANDAMENTO
+  PENDENTE
+  CONCLUIDA
+}

@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/utils/prisma.service';
-import { CreateUserDto } from '../dtos/create-user.dto';
-import { Prisma } from '@prisma/client';
-import { UserEntity } from '../entities/user.entity';
+import { Prisma, User } from '@prisma/client';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async create(data: CreateUserDto): Promise<UserEntity> {
+  public async create(data: Prisma.UserCreateInput): Promise<User> {
     try {
       return await this.prisma.user.create({
         data,
@@ -20,7 +18,7 @@ export class UserRepository {
     }
   }
 
-  public async delete(id: Prisma.UserWhereUniqueInput): Promise<UserEntity> {
+  public async delete(id: Prisma.UserWhereUniqueInput): Promise<User> {
     try {
       return await this.prisma.user.delete({
         where: id,
@@ -34,7 +32,7 @@ export class UserRepository {
   public async update(
     id: Prisma.UserWhereUniqueInput,
     data: Partial<UpdateUserDto>,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     try {
       return await this.prisma.user.update({
         where: id,
@@ -46,7 +44,7 @@ export class UserRepository {
     }
   }
 
-  public async findOne(id: Prisma.UserWhereUniqueInput): Promise<UserEntity> {
+  public async findOne(id: Prisma.UserWhereUniqueInput): Promise<User> {
     try {
       return await this.prisma.user.findUnique({
         where: id,

@@ -48,6 +48,9 @@ export class UserRepository {
     try {
       return await this.prisma.user.findUnique({
         where: id,
+        include: {
+          projects: true,
+        },
       });
     } catch (error) {
       console.log(`An error ocurred while searching a user - ${error}`);

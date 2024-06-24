@@ -49,4 +49,13 @@ export class ProjectsController {
   ) {
     return this.projectsService.addUser(entire_payload, projectId, ownerId);
   }
+
+  @Patch('remove-user/:id')
+  removeUser(
+    @Param() projectId: Prisma.ProjectWhereUniqueInput,
+    @Body() userId: Prisma.UserProjectUserIdProjectIdCompoundUniqueInput,
+    @Query('validate_owner') ownerId: string,
+  ) {
+    return this.projectsService.removeUser(userId, projectId, ownerId);
+  }
 }

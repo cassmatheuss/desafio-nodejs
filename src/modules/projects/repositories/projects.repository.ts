@@ -70,4 +70,25 @@ export class ProjectRepository {
       throw error;
     }
   }
+
+  public async removeUser(
+    userId: Prisma.UserProjectUserIdProjectIdCompoundUniqueInput,
+    projectId: Prisma.ProjectWhereUniqueInput,
+  ): Promise<UserProject> {
+    try {
+      return await this.prisma.userProject.delete({
+        where: {
+          userId_projectId: {
+            userId: userId.userId,
+            projectId: projectId.id,
+          },
+        },
+      });
+    } catch (error) {
+      console.log(
+        `An error ocurred while removing a user in a project - ${error}`,
+      );
+      throw error;
+    }
+  }
 }

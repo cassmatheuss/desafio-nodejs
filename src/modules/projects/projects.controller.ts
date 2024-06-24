@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Get,
+  Query,
 } from '@nestjs/common';
 import { CreateProjectDto } from './dtos/create-project.dto';
 import { ProjectsService } from './services/projects.service';
 import { Prisma } from '@prisma/client';
 import { UpdateProjectDto } from './dtos/update-project.dto';
+import { UserProjectDto } from './dtos/user-project.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -37,5 +39,14 @@ export class ProjectsController {
   @Get(':id')
   findOne(@Param() idToFind: Prisma.ProjectWhereUniqueInput) {
     return this.projectsService.findOne(idToFind);
+  }
+
+  @Patch('add-user/:id')
+  addUser(
+    @Param() projectId: Prisma.ProjectWhereUniqueInput,
+    @Body() entire_payload: UserProjectDto,
+    @Query('validate_owner') ownerId: string,
+  ) {
+    return this.projectsService.addUser(entire_payload, projectId, ownerId);
   }
 }

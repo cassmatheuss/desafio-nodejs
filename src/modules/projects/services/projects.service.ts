@@ -4,6 +4,8 @@ import { ProjectEntity } from '../entities/project.entity';
 import { ProjectRepository } from '../repositories/projects.repository';
 import { Prisma } from '@prisma/client';
 import { UpdateProjectDto } from '../dtos/update-project.dto';
+import { UserProjectEntity } from '../entities/user-project.entity';
+import { UserProjectDto } from '../dtos/user-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -54,6 +56,26 @@ export class ProjectsService {
     try {
       const searchedProject = await this.projectRepository.findOne(id);
       return new ProjectEntity(searchedProject);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addUser(
+    entire_payload: UserProjectDto,
+    projectId: Prisma.ProjectWhereUniqueInput,
+    ownerId: string,
+  ) {
+    try {
+      const checkUser =
+        (await this.findOne({ id: projectId.id })).ownerId === ownerId;
+      if (checkUser) {
+        entire_payload.projectId = projectId.id;
+        const addedUser = await this.projectRepository.addUser(entire_payload);
+        return new UserProjectEntity(addedUser);
+      } else {
+        throw Error('User not allowed.');
+      }
     } catch (error) {
       throw error;
     }

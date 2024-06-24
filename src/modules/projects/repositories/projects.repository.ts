@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/utils/prisma.service';
-import { Prisma, Project } from '@prisma/client';
+import { Prisma, Project, UserProject } from '@prisma/client';
 import { UpdateProjectDto } from '../dtos/update-project.dto';
+import { UserProjectDto } from '../dtos/user-project.dto';
 
 @Injectable()
 export class ProjectRepository {
@@ -53,6 +54,19 @@ export class ProjectRepository {
       });
     } catch (error) {
       console.log(`An error ocurred while searching a project - ${error}`);
+      throw error;
+    }
+  }
+
+  public async addUser(data: UserProjectDto): Promise<UserProject> {
+    try {
+      return await this.prisma.userProject.create({
+        data,
+      });
+    } catch (error) {
+      console.log(
+        `An error ocurred while adding a user to a project - ${error}`,
+      );
       throw error;
     }
   }

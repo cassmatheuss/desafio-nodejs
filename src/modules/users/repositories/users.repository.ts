@@ -58,7 +58,7 @@ export class UserRepository {
     }
   }
 
-  public async findAll(size: number, page: number) {
+  public async findAll(size: number, page: number): Promise<Array<User>> {
     const limit = size * (parseInt(page as any) - 1);
     try {
       return await this.prisma.user.findMany({

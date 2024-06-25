@@ -46,7 +46,7 @@ export class UserRepository {
 
   public async findOne(id: Prisma.UserWhereUniqueInput): Promise<User> {
     try {
-      return await this.prisma.user.findUnique({
+      return await this.prisma.user.findFirstOrThrow({
         where: id,
         include: {
           projects: true,

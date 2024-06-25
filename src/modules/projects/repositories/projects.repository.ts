@@ -49,7 +49,7 @@ export class ProjectRepository {
 
   public async findOne(id: Prisma.ProjectWhereUniqueInput): Promise<Project> {
     try {
-      return await this.prisma.project.findUnique({
+      return await this.prisma.project.findFirstOrThrow({
         where: id,
       });
     } catch (error) {

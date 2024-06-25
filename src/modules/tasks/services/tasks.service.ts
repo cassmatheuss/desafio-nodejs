@@ -6,6 +6,7 @@ import { CreateTaskInputDto } from '../dtos/create-task-input.dto';
 import { TaskEntity } from '../entities/task.entity';
 import { TagsService } from 'src/modules/tags/services/tags.service';
 import { ProjectsService } from 'src/modules/projects/services/projects.service';
+import { UsersService } from 'src/modules/users/services/users.service';
 
 @Injectable()
 export class TasksService {
@@ -13,6 +14,7 @@ export class TasksService {
     private readonly taskRepository: TaskRepository,
     private readonly tagService: TagsService,
     private readonly projectService: ProjectsService,
+    private readonly userService: UsersService,
   ) {}
   // function to generate a payload to TagInTask
   private generatePayloadArray(taskId: string, tags: Array<string>) {
@@ -54,30 +56,59 @@ export class TasksService {
     }
   }
 
+  private async checkUserInProject(user: string, project: string) {
+    try {
+      const projectExist = await this.projectService.findOne({ id: project });
+
+      const isUserInProject = projectExist.members.some(
+        (member) => member.userId === `${user}`,
+      );
+      return isUserInProject;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async create(
     data: CreateTaskInputDto,
     projectId: Prisma.TaskWhereUniqueInput,
+    userId: string,
   ) {
     try {
       if (await this.checkProjectExistence(projectId.id)) {
-        if (data.tags && data.tags.length !== 0) {
-          if (await this.checkTagExistence(data.tags)) {
-            const payload = this.generatePayloadTask(data, projectId);
-            const createdTask = await this.taskRepository.create(payload);
-            this.addTag({ tagId: data.tags }, { id: createdTask.id });
-            return {
-              message: `Task ${createdTask.title} created successfully.`,
-              task_data: new TaskEntity(createdTask),
-            };
+        if (await this.checkUserInProject(userId, projectId.id)) {
+          if (data.tags && data.tags.length !== 0) {
+            if (await this.checkTagExistence(data.tags)) {
+              const payload = this.generatePayloadTask(data, projectId);
+              const createdTask = await this.taskRepository.create(payload);
+              this.addTag({ tagId: data.tags }, { id: createdTask.id });
+              return {
+                message: `Task ${createdTask.title} created successfully.`,
+                task_data: new TaskEntity(createdTask),
+              };
+            } else {
+              throw new Error('Tag(s) does not exist!');
+            }
           } else {
-            throw new Error('Tag(s) does not exist!');
+            throw new Error('Tags are not provided!');
           }
         } else {
-          throw new Error('Tags are not provided!');
+          throw new Error('User not allowed!');
         }
       } else {
         throw new Error('Project does not exist!');
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(taskId: Prisma.TaskWhereUniqueInput) {
+    try {
+      await this.taskRepository.delete(taskId);
+      return {
+        message: 'Task deleted successfully',
+      };
     } catch (error) {
       throw error;
     }

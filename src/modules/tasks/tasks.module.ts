@@ -7,6 +7,8 @@ import { TagsService } from '../tags/services/tags.service';
 import { TagRepository } from '../tags/repositories/tag.repository';
 import { ProjectsService } from '../projects/services/projects.service';
 import { ProjectRepository } from '../projects/repositories/projects.repository';
+import { UserRepository } from '../users/repositories/users.repository';
+import { UsersService } from '../users/services/users.service';
 
 @Module({
   controllers: [TasksController],
@@ -18,6 +20,8 @@ import { ProjectRepository } from '../projects/repositories/projects.repository'
     PrismaService,
     ProjectsService,
     ProjectRepository,
+    UsersService,
+    UserRepository,
   ],
 })
 export class TasksModule {}

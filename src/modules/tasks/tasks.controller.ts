@@ -1,4 +1,12 @@
-import { Controller, Body, Param, Patch, Post } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Param,
+  Patch,
+  Post,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TasksService } from './services/tasks.service';
 import { Prisma } from '@prisma/client';
 import { AddTagDto } from './dtos/add-tag.dto';
@@ -12,8 +20,14 @@ export class TasksController {
   create(
     @Param() projectId: Prisma.TaskWhereUniqueInput,
     @Body() data: CreateTaskInputDto,
+    @Query('validate_user') userId: string,
   ) {
-    return this.tasksService.create(data, projectId);
+    return this.tasksService.create(data, projectId, userId);
+  }
+
+  @Delete(':id')
+  delete(@Param() taskId: Prisma.TaskWhereUniqueInput) {
+    return this.tasksService.delete(taskId);
   }
 
   @Patch('add-tag/:id')

@@ -10,12 +10,22 @@ export class TaskRepository {
     try {
       return await this.prisma.task.create({
         data,
-        include: {
-          tags: true,
-        },
       });
     } catch (error) {
       console.log(`An error ocurred while creating a task - ${error}`);
+      throw error;
+    }
+  }
+
+  public async delete(taskId: Prisma.TaskWhereUniqueInput) {
+    try {
+      return await this.prisma.task.delete({
+        where: {
+          id: taskId.id,
+        },
+      });
+    } catch (error) {
+      console.log(`An error ocurred while deleting a task - ${error}`);
       throw error;
     }
   }
@@ -30,6 +40,7 @@ export class TaskRepository {
       throw error;
     }
   }
+
   public async removeTag(data: Array<Prisma.TagInTaskUncheckedCreateInput>) {
     try {
       return await this.prisma.tagInTask.deleteMany({

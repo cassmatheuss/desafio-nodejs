@@ -51,6 +51,9 @@ export class ProjectRepository {
     try {
       return await this.prisma.project.findFirstOrThrow({
         where: id,
+        include: {
+          members: true,
+        },
       });
     } catch (error) {
       console.log(`An error ocurred while searching a project - ${error}`);

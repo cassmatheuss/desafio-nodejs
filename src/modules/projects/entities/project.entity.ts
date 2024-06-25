@@ -1,3 +1,5 @@
+import { UserProject } from '@prisma/client';
+
 export class ProjectEntity {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export class ProjectEntity {
   created_at: Date;
   updated_at: Date;
   ownerId: string;
-
+  members: UserProject[];
   constructor(partial: Partial<ProjectEntity>) {
     Object.assign(this, partial);
   }

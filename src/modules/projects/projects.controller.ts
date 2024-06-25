@@ -41,6 +41,11 @@ export class ProjectsController {
     return this.projectsService.findOne(idToFind);
   }
 
+  @Get()
+  findAll(@Query('size') size: number, @Query('page') page: number) {
+    return this.projectsService.findAll(size, page);
+  }
+
   @Patch('add-user/:id')
   addUser(
     @Param() projectId: Prisma.ProjectWhereUniqueInput,

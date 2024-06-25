@@ -61,6 +61,23 @@ export class ProjectRepository {
     }
   }
 
+  public async findAll(size: number, page: number): Promise<Array<Project>> {
+    const limit = size * (parseInt(page as any) - 1);
+    try {
+      return await this.prisma.project.findMany({
+        take: parseInt(size as any),
+        skip: limit,
+        include: {
+          members: true,
+          tasks: true,
+        },
+      });
+    } catch (error) {
+      console.log(`An error ocurred while searching projects - ${error}`);
+      throw error;
+    }
+  }
+
   public async addUser(data: UserProjectDto): Promise<UserProject> {
     try {
       return await this.prisma.userProject.create({

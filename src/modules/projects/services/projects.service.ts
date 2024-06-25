@@ -60,6 +60,15 @@ export class ProjectsService {
     }
   }
 
+  async findAll(size: number, page: number) {
+    try {
+      const searchedProjects = await this.projectRepository.findAll(size, page);
+      return searchedProjects;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async addUser(
     entire_payload: UserProjectDto,
     projectId: Prisma.ProjectWhereUniqueInput,

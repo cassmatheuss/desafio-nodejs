@@ -6,11 +6,13 @@ import {
   Post,
   Delete,
   Query,
+  Get,
 } from '@nestjs/common';
 import { TasksService } from './services/tasks.service';
 import { Prisma } from '@prisma/client';
 import { AddTagDto } from './dtos/add-tag.dto';
 import { CreateTaskInputDto } from './dtos/create-task-input.dto';
+import { UpdateTaskDto } from './dtos/update-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -30,6 +32,19 @@ export class TasksController {
     return this.tasksService.delete(taskId);
   }
 
+  @Patch(':id')
+  update(
+    @Param() taskId: Prisma.TaskWhereUniqueInput,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
+    return this.tasksService.update(taskId, updateTaskDto);
+  }
+
+  @Get(':id')
+  findOne(@Param() taskId: Prisma.TaskWhereUniqueInput) {
+    return this.tasksService.findOne(taskId);
+  }
+
   @Patch('add-tag/:id')
   addTag(
     @Param() taskId: Prisma.TaskWhereUniqueInput,
@@ -37,6 +52,7 @@ export class TasksController {
   ) {
     return this.tasksService.addTag(addTagDto, taskId);
   }
+
   @Patch('remove-tag/:id')
   removeTag(
     @Param() taskId: Prisma.TaskWhereUniqueInput,

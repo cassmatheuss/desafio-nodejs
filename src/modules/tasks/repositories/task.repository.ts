@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Task } from '@prisma/client';
 import { PrismaService } from 'src/utils/prisma.service';
+import { UpdateTaskDto } from '../dtos/update-task.dto';
 
 @Injectable()
 export class TaskRepository {
@@ -26,6 +27,32 @@ export class TaskRepository {
       });
     } catch (error) {
       console.log(`An error ocurred while deleting a task - ${error}`);
+      throw error;
+    }
+  }
+
+  public async update(
+    taskId: Prisma.TaskWhereUniqueInput,
+    data: Partial<UpdateTaskDto>,
+  ): Promise<Task> {
+    try {
+      return await this.prisma.task.update({
+        where: taskId,
+        data,
+      });
+    } catch (error) {
+      console.log(`An error ocurred while updating a task - ${error}`);
+      throw error;
+    }
+  }
+
+  public async findOne(id: Prisma.TaskWhereUniqueInput): Promise<Task> {
+    try {
+      return await this.prisma.task.findFirstOrThrow({
+        where: id,
+      });
+    } catch (error) {
+      console.log(`An error ocurred while searching a task - ${error}`);
       throw error;
     }
   }

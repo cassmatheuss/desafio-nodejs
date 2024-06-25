@@ -7,6 +7,7 @@ import { TaskEntity } from '../entities/task.entity';
 import { TagsService } from 'src/modules/tags/services/tags.service';
 import { ProjectsService } from 'src/modules/projects/services/projects.service';
 import { UsersService } from 'src/modules/users/services/users.service';
+import { UpdateTaskDto } from '../dtos/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -69,6 +70,15 @@ export class TasksService {
     }
   }
 
+  private async checkStatusTask(task: string) {
+    try {
+      const taskExist = await this.findOne({ id: task });
+      return taskExist.status === 'CONCLUIDA';
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(
     data: CreateTaskInputDto,
     projectId: Prisma.TaskWhereUniqueInput,
@@ -109,6 +119,35 @@ export class TasksService {
       return {
         message: 'Task deleted successfully',
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(taskId: Prisma.TaskWhereUniqueInput, data: UpdateTaskDto) {
+    try {
+      if (!('status' in data)) {
+        if (!(await this.checkStatusTask(taskId.id))) {
+          const updatedTask = await this.taskRepository.update(taskId, data);
+          return {
+            message: `Task ${data.title} updated successfully.`,
+            task_data: new TaskEntity(updatedTask),
+          };
+        } else {
+          throw new Error('This task is completed.');
+        }
+      } else {
+        throw new Error('Status update not allowed.');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOne(id: Prisma.TaskWhereUniqueInput) {
+    try {
+      const searchedTask = await this.taskRepository.findOne(id);
+      return new TaskEntity(searchedTask);
     } catch (error) {
       throw error;
     }

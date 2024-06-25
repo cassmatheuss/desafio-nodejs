@@ -62,9 +62,9 @@ export class TasksService {
     try {
       const projectExist = await this.projectService.findOne({ id: project });
 
-      const isUserInProject = projectExist.members.some(
-        (member) => member.userId === `${user}`,
-      );
+      const isUserInProject =
+        projectExist.members.some((member) => member.userId === user) ||
+        projectExist.ownerId === user;
       return isUserInProject;
     } catch (error) {
       return false;

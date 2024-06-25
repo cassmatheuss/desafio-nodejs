@@ -50,6 +50,7 @@ export class UserRepository {
         where: id,
         include: {
           projects: true,
+          projects_ownership: true,
         },
       });
     } catch (error) {

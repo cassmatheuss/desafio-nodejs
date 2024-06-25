@@ -8,6 +8,7 @@ import { TagsService } from 'src/modules/tags/services/tags.service';
 import { ProjectsService } from 'src/modules/projects/services/projects.service';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
+import { ChangeStatusDto } from '../dtos/change-status.dto';
 
 @Injectable()
 export class TasksService {
@@ -139,6 +140,20 @@ export class TasksService {
       } else {
         throw new Error('Status update not allowed.');
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async changeStatus(
+    taskId: Prisma.TaskWhereUniqueInput,
+    status: ChangeStatusDto,
+  ) {
+    try {
+      await this.taskRepository.changeStatus(taskId, status);
+      return {
+        message: `Status updated successfully.`,
+      };
     } catch (error) {
       throw error;
     }

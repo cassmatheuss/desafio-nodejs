@@ -13,6 +13,7 @@ import { Prisma } from '@prisma/client';
 import { AddTagDto } from './dtos/add-tag.dto';
 import { CreateTaskInputDto } from './dtos/create-task-input.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { ChangeStatusDto } from './dtos/change-status.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -38,6 +39,14 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
     return this.tasksService.update(taskId, updateTaskDto);
+  }
+
+  @Patch('change-status/:id')
+  changeStatus(
+    @Param() taskId: Prisma.TaskWhereUniqueInput,
+    @Body() status: ChangeStatusDto,
+  ) {
+    return this.tasksService.changeStatus(taskId, status);
   }
 
   @Get(':id')

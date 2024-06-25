@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Task } from '@prisma/client';
 import { PrismaService } from 'src/utils/prisma.service';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
+import { ChangeStatusDto } from '../dtos/change-status.dto';
 
 @Injectable()
 export class TaskRepository {
@@ -42,6 +43,23 @@ export class TaskRepository {
       });
     } catch (error) {
       console.log(`An error ocurred while updating a task - ${error}`);
+      throw error;
+    }
+  }
+
+  public async changeStatus(
+    taskId: Prisma.TaskWhereUniqueInput,
+    status: ChangeStatusDto,
+  ): Promise<Task> {
+    try {
+      return await this.prisma.task.update({
+        where: taskId,
+        data: {
+          status: status.status,
+        },
+      });
+    } catch (error) {
+      console.log(`An error ocurred while changing a status - ${error}`);
       throw error;
     }
   }

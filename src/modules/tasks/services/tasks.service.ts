@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { TaskRepository } from '../repositories/task.repository';
 import { AddTagDto } from '../dtos/add-tag.dto';
 import { Prisma } from '@prisma/client';
@@ -98,16 +103,16 @@ export class TasksService {
                 task_data: new TaskEntity(createdTask),
               };
             } else {
-              throw new Error('Tag(s) does not exist!');
+              throw new NotFoundException('Tag(s) does not exist!');
             }
           } else {
-            throw new Error('Tags are not provided!');
+            throw new BadRequestException('Tags are not provided!');
           }
         } else {
-          throw new Error('User not allowed!');
+          throw new UnauthorizedException('User not allowed!');
         }
       } else {
-        throw new Error('Project does not exist!');
+        throw new NotFoundException('Project does not exist!');
       }
     } catch (error) {
       throw error;

@@ -8,7 +8,7 @@ export class TaskEntity {
   tags: TagInTask;
   created_at: Date;
   updated_at: Date;
-  constructor(partial: Partial<TaskEntity>) {
-    Object.assign(this, partial);
+  constructor(init: Partial<TaskEntity>) {
+    Object.assign(this, init);
   }
 }

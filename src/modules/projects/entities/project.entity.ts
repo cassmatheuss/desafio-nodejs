@@ -8,7 +8,7 @@ export class ProjectEntity {
   updated_at: Date;
   ownerId: string;
   members: UserProject[];
-  constructor(partial: Partial<ProjectEntity>) {
-    Object.assign(this, partial);
+  constructor(init: Partial<ProjectEntity>) {
+    Object.assign(this, init);
   }
 }

@@ -5,7 +5,7 @@ export class UserEntity {
   password: string;
   created_at: Date;
   updated_at: Date;
-  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
+  constructor(init: Partial<UserEntity>) {
+    Object.assign(this, init);
   }
 }

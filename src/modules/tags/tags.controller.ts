@@ -63,8 +63,7 @@ export class TagsController {
   @ApiResponse({ status: 500 })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 200, description: 'OK' })
-  @ApiParam({ name: 'id' })
-  @Get('')
+  @Get()
   findAll(@Query('size') size: number, @Query('page') page: number) {
     return this.tagsService.findAll(size, page);
   }

@@ -1,10 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserRepository } from '../repositories/users.repository';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from '../entities/user.entity';
 import { Prisma } from '@prisma/client';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +27,9 @@ export class UsersService {
         user_data: new UserEntity(createdUser),
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -30,7 +40,11 @@ export class UsersService {
         message: `User ${deletedUser.email} deleted successfully.`,
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('User not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -45,7 +59,11 @@ export class UsersService {
         user_data: new UserEntity(updatedUser),
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('User not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -54,7 +72,11 @@ export class UsersService {
       const searchedUser = await this.userRepository.findOne(id);
       return new UserEntity(searchedUser);
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('User not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -63,7 +85,9 @@ export class UsersService {
       const searchedUser = await this.userRepository.findAll(size, page);
       return searchedUser;
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 }

@@ -1,10 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateProjectDto } from '../dtos/create-project.dto';
 import { ProjectEntity } from '../entities/project.entity';
 import { ProjectRepository } from '../repositories/projects.repository';
 import { Prisma } from '@prisma/client';
 import { UpdateProjectDto } from '../dtos/update-project.dto';
 import { UserProjectDto } from '../dtos/user-project.dto';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ProjectsService {
@@ -18,7 +27,9 @@ export class ProjectsService {
         project_data: new ProjectEntity(createdProject),
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -29,7 +40,11 @@ export class ProjectsService {
         message: `Project ${deletedProject.name} deleted successfully.`,
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Project not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -47,7 +62,11 @@ export class ProjectsService {
         project_data: new ProjectEntity(updatedProject),
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Project not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -56,7 +75,11 @@ export class ProjectsService {
       const searchedProject = await this.projectRepository.findOne(id);
       return new ProjectEntity(searchedProject);
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Project not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -65,7 +88,9 @@ export class ProjectsService {
       const searchedProjects = await this.projectRepository.findAll(size, page);
       return searchedProjects;
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -84,10 +109,14 @@ export class ProjectsService {
           message: `User added successfully.`,
         };
       } else {
-        throw Error('User not allowed.');
+        throw new UnauthorizedException('User not allowed.');
       }
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('User not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -105,10 +134,14 @@ export class ProjectsService {
           message: `User removed successfully.`,
         };
       } else {
-        throw Error('User not allowed.');
+        throw new UnauthorizedException('User not allowed.');
       }
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('User not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 }

@@ -1,8 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TagDto } from '../dtos/tag.dto';
 import { TagRepository } from '../repositories/tag.repository';
 import { TagEntity } from '../entities/tag.entity';
 import { Prisma } from '@prisma/client';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 
 @Injectable()
 export class TagsService {
@@ -15,7 +23,9 @@ export class TagsService {
         tag_data: new TagEntity(createdTag),
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -26,7 +36,11 @@ export class TagsService {
         message: `Tag deleted successfully.`,
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Tag not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -35,7 +49,11 @@ export class TagsService {
       const searchedTag = await this.tagRepository.findOne(idToFind);
       return new TagEntity(searchedTag);
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Tag not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -44,7 +62,9 @@ export class TagsService {
       const searchedTag = await this.tagRepository.findAll(size, page);
       return searchedTag;
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -56,7 +76,11 @@ export class TagsService {
         tag_data: updatedTag,
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Tag not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 }

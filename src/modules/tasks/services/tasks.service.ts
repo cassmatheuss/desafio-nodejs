@@ -14,6 +14,10 @@ import { ProjectsService } from 'src/modules/projects/services/projects.service'
 import { UsersService } from 'src/modules/users/services/users.service';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
 import { ChangeStatusDto } from '../dtos/change-status.dto';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 
 @Injectable()
 export class TasksService {
@@ -103,16 +107,16 @@ export class TasksService {
                 task_data: new TaskEntity(createdTask),
               };
             } else {
-              throw new NotFoundException('Tag(s) does not exist!');
+              throw new NotFoundException('Tag not found');
             }
           } else {
-            throw new BadRequestException('Tags are not provided!');
+            throw new BadRequestException();
           }
         } else {
-          throw new UnauthorizedException('User not allowed!');
+          throw new UnauthorizedException('User are not in the project');
         }
       } else {
-        throw new NotFoundException('Project does not exist!');
+        throw new NotFoundException('Project not found');
       }
     } catch (error) {
       throw error;
@@ -126,7 +130,11 @@ export class TasksService {
         message: 'Task deleted successfully',
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException(error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -140,13 +148,17 @@ export class TasksService {
             task_data: new TaskEntity(updatedTask),
           };
         } else {
-          throw new Error('This task is completed.');
+          throw new UnauthorizedException('This task is completed.');
         }
       } else {
-        throw new Error('Status update not allowed.');
+        throw new UnauthorizedException('Status update not allowed.');
       }
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Task not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(error.message);
+      else throw error;
     }
   }
 
@@ -160,7 +172,14 @@ export class TasksService {
         message: `Status updated successfully.`,
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Task not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException(
+          'Expected CONCLUIDA, EM_ANDAMENTO OR PENDENTE',
+          error.message,
+        );
+      else throw error;
     }
   }
 
@@ -169,7 +188,9 @@ export class TasksService {
       const searchedTask = await this.taskRepository.findOne(id);
       return new TaskEntity(searchedTask);
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Task not found', error.message);
+      else throw error;
     }
   }
 
@@ -181,7 +202,11 @@ export class TasksService {
         message: 'Tag(s) added successfully',
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Task not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException('Tag not found', error.message);
+      else throw error;
     }
   }
 
@@ -193,7 +218,11 @@ export class TasksService {
         message: 'Tag(s) removed successfully',
       };
     } catch (error) {
-      throw error;
+      if (error instanceof PrismaClientKnownRequestError)
+        throw new NotFoundException('Task not found', error.message);
+      else if (error instanceof PrismaClientValidationError)
+        throw new BadRequestException('Tag not found', error.message);
+      else throw error;
     }
   }
 }

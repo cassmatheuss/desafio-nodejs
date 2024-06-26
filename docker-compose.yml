@@ -11,3 +11,12 @@ services:
       POSTGRES_DB: desafio-nodejs
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: postgres 
+  app:
+    container_name: "app-desafio-nodejs-khipo"
+    ports:
+      - "3000:3000"
+    environment:
+       DATABASE_URL: postgresql://pguser:postgres@db:5432/desafio-nodejs?schema=public
+    depends_on:
+      - db
+    build: .

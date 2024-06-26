@@ -2,6 +2,20 @@
   <img title="a title" alt="Alt text" src="https://media.licdn.com/dms/image/D4E16AQGjCVuzlCthvg/profile-displaybackgroundimage-shrink_200_800/0/1690574706700?e=2147483647&v=beta&t=zlY1Mc10yQ3gA9qiZ4sZ7m8PkE-HIu8Haa1fUyKb_fU">
 </p>
 
+# Sobre o projeto - Matheus Castilho
+Aplicação feita em TypeScript utilizando NestJs, baseando-se em princípios de Clean Architecture. Para acessar a documentação feita com o Swagger, acesse: `http://localhost:3000/api`
+
+O arquivo `desafio-khipo-insomnia-collection.json` pode ser utilizado no Insomnia para gerar uma coleção com os requests da aplicação.
+
+# Rodando a aplicação
+A aplicação foi conteinerizada utilizando-se do Docker, e pode ser iniciada com os seguintes passos:
+
+    1. cd desafio-nodejs
+    2. docker compose up
+
+Após isso, aguardar a aplicação e o banco de dados iniciarem.
+
+
 # Desafio Backend | NodeJS
 
 Olá, candidato! Se você chegou até aqui, é porque demonstrou interesse em fazer parte do nosso time. Preparamos um desafio para entendermos um pouco mais sobre suas habilidades como desenvolvedor backend em NodeJS.
